@@ -285,7 +285,7 @@ plt.show()
 # In[77]:
 
 
-pip install -U scikit-learn
+# pip install -U scikit-learn
 
 
 # In[42]:
