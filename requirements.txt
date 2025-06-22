@@ -1,4 +1,6 @@
+
 tensorflow==2.19.0
+tensorflow_decision_forests
 pandas==2.2.2
 scikit-learn==1.4.2
 numpy==1.26.4
