@@ -28,8 +28,9 @@ def train_and_save_model(train_df):
 
 @st.cache_resource
 def load_model():
-    model = tfdf.keras.RandomForestModel()
+    model = tfdf.keras.RandomForestModel(task=tfdf.keras.Task.REGRESSION)
     model.load_from_directory(MODEL_PATH)
+    model.compile(metrics=["mse", "mae"])
     return model
 
 def main():
