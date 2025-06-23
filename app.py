@@ -28,7 +28,7 @@ def train_and_save_model(train_df):
 
 @st.cache_resource
 def load_model():
-    return tfdf.keras.models.load_model(MODEL_PATH)  # ✅ Bonne méthode TFDF
+    return tfdf.keras.RandomForestModel.load(MODEL_PATH)  # ⚠️ Ici la méthode correcte
 
 def main():
     st.title("Prédiction prix Bitcoin avec TensorFlow Decision Forests")
