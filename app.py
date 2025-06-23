@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import tensorflow_decision_forests as tfdf
-import tensorflow as tf
 import matplotlib.pyplot as plt
 import math
 import os
@@ -22,13 +21,16 @@ def train_and_save_model(train_df):
     model = tfdf.keras.RandomForestModel(task=tfdf.keras.Task.REGRESSION)
     model.fit(train_ds)
     model.compile(metrics=["mse", "mae"])
+
     os.makedirs(MODEL_PATH, exist_ok=True)
-    model.save(MODEL_PATH)  # Sauvegarde au format SavedModel
+    model.save(MODEL_PATH)
     return model
 
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model(MODEL_PATH)  # Chargement avec tf.keras
+    model = tfdf.keras.RandomForestModel()
+    model.load_from_directory(MODEL_PATH)
+    return model
 
 def main():
     st.title("Prédiction prix Bitcoin avec TensorFlow Decision Forests")
@@ -54,6 +56,7 @@ def main():
         st.success("Modèle chargé.")
 
     test_ds = tfdf.keras.pd_dataframe_to_tf_dataset(test_df, label="target", task=tfdf.keras.Task.REGRESSION)
+
     evaluation = model.evaluate(test_ds, return_dict=True)
     st.write("Évaluation du modèle :", evaluation)
     st.write(f"RMSE: {math.sqrt(evaluation['mse']):.4f}")
