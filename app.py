@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import tensorflow_decision_forests as tfdf
+import tensorflow as tf
 import matplotlib.pyplot as plt
 import math
 import os
@@ -22,12 +23,12 @@ def train_and_save_model(train_df):
     model.fit(train_ds)
     model.compile(metrics=["mse", "mae"])
     os.makedirs(MODEL_PATH, exist_ok=True)
-    model.save(MODEL_PATH)
+    model.save(MODEL_PATH)  # Sauvegarde au format SavedModel
     return model
 
 @st.cache_resource
 def load_model():
-    return tfdf.keras.RandomForestModel.load(MODEL_PATH)
+    return tf.keras.models.load_model(MODEL_PATH)  # Chargement avec tf.keras
 
 def main():
     st.title("Prédiction prix Bitcoin avec TensorFlow Decision Forests")
@@ -39,9 +40,8 @@ def main():
     df = load_data(DATA_PATH)
     st.write("Aperçu des données :", df.head())
 
-    # ⚠️ Réduction temporaire à 20k exemples
-    train_df = df.iloc[:20000].copy()
-    test_df = df.iloc[20000:25000].copy()  # Test plus léger aussi
+    train_df = df.iloc[:150000].copy()
+    test_df = df.iloc[150000:].copy()
     st.write(f"Taille train: {train_df.shape}, taille test: {test_df.shape}")
 
     if not os.path.exists(MODEL_PATH):
@@ -54,7 +54,6 @@ def main():
         st.success("Modèle chargé.")
 
     test_ds = tfdf.keras.pd_dataframe_to_tf_dataset(test_df, label="target", task=tfdf.keras.Task.REGRESSION)
-
     evaluation = model.evaluate(test_ds, return_dict=True)
     st.write("Évaluation du modèle :", evaluation)
     st.write(f"RMSE: {math.sqrt(evaluation['mse']):.4f}")
